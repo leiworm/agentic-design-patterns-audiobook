@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>智能体设计模式 · 有声精讲</title>
+<style>
+:root{
+  --bg:#f5f7fa; --surface:#ffffff; --ink:#1e2430; --muted:#6b7482; --line:#e4e8ee;
+  --accent:#2b5f9e; --accent-soft:#eaf1fa; --accent-2:#0f7a6a; --ok:#16794b; --bad:#b3403b;
+  --shadow:0 1px 2px rgba(24,39,66,.04),0 8px 28px rgba(24,39,66,.06);
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;max-width:100%;overflow-x:hidden}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;font-size:15px;line-height:1.75;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+.app{display:flex;height:100vh;overflow:hidden}
+.sidebar{width:308px;flex:0 0 308px;background:var(--surface);border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+.brand{padding:22px 22px 14px}
+.brand h1{font-size:18px;margin:0 0 4px;letter-spacing:.2px}
+.brand p{margin:0;color:var(--muted);font-size:12.5px}
+.progress-wrap{margin:14px 22px 8px}
+.progress-top{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px}
+.bar{height:6px;border-radius:99px;background:#eceff4;overflow:hidden}
+.bar>span{display:block;height:100%;background:var(--accent-2);border-radius:99px;transition:width .3s}
+.search{margin:10px 18px 8px;position:relative}
+.search input{width:100%;padding:8px 12px 8px 32px;border:1px solid var(--line);border-radius:9px;background:#fafbfc;outline:none;font-size:13px}
+.search input:focus{border-color:var(--accent);background:#fff}
+.search svg{position:absolute;left:10px;top:10px;opacity:.45}
+.nav{flex:1;overflow-y:auto;padding:4px 10px 24px}
+.group-title{font-size:11.5px;letter-spacing:.08em;color:var(--muted);padding:16px 12px 6px;font-weight:600}
+.chapter{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:0;background:transparent;padding:9px 11px;border-radius:9px;line-height:1.4}
+.chapter:hover{background:#f2f5f9}
+.chapter.active{background:var(--accent-soft)}
+.chapter .no{flex:0 0 26px;font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.chapter.active .no{color:var(--accent);font-weight:700}
+.chapter .txt{flex:1;min-width:0}
+.chapter .t{display:block;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chapter .s{display:block;font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chapter .dot{flex:0 0 8px;height:8px;border-radius:99px;background:#d8dde5}
+.chapter .dot.done{background:var(--accent-2)}
+.side-foot{padding:12px 20px;border-top:1px solid var(--line);font-size:11px;color:var(--muted);line-height:1.6}
+.main{flex:1;overflow-y:auto;min-width:0}
+.inner{max-width:860px;margin:0 auto;padding:26px 34px 80px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:22px}
+.crumb{font-size:12.5px;color:var(--muted)}
+.crumb b{color:var(--accent);font-weight:600}
+.top-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;max-width:100%}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:6px 11px;font-size:12.5px;white-space:nowrap;text-decoration:none;display:inline-block}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn.primary:hover{opacity:.9;color:#fff}
+.btn.on{background:var(--accent-soft);border-color:#bcd3ec;color:var(--accent)}
+.btn:focus-visible,.tab:focus-visible,.opt:focus-visible,.chapter:focus-visible,.seg button:focus-visible,.predict-opts button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.hero{margin-bottom:20px}
+.hero .kicker{font-size:12px;color:var(--accent);font-weight:600;letter-spacing:.06em}
+.hero h2{font-size:29px;line-height:1.3;margin:6px 0 6px;letter-spacing:-.3px}
+.hero p{margin:0;color:var(--muted);font-size:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+.player{padding:18px 20px 16px;margin-bottom:22px}
+.player-main{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.play{width:48px;height:48px;flex:0 0 48px;border:0;border-radius:99px;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:18px}
+.play:hover{opacity:.9}
+.play svg{width:20px;height:20px;fill:currentColor}
+.pmeta{flex:1;min-width:140px}
+.pmeta .pt{font-size:13.5px;font-weight:600}
+.pmeta .pd{font-size:11.5px;color:var(--muted)}
+.small-btns{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.icon-btn{width:34px;height:34px;border:1px solid var(--line);background:#fff;border-radius:8px;font-size:12px;display:grid;place-items:center}
+.icon-btn:hover{border-color:var(--accent);color:var(--accent)}
+select{border:1px solid var(--line);border-radius:8px;background:#fff;padding:6px 8px;font-size:12.5px}
+.seek{display:flex;align-items:center;gap:10px;margin-top:16px}
+.seek input[type=range]{flex:1;accent-color:var(--accent);height:5px;cursor:pointer}
+.time{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums;min-width:82px;text-align:right}
+.hint{margin-top:10px;font-size:11.5px;color:var(--muted);line-height:1.8}
+.hint b{color:var(--ink)}
+.follow{display:inline-flex;align-items:center;gap:5px;margin-left:8px;white-space:nowrap}
+.follow input{accent-color:var(--accent);vertical-align:-2px}
+.status-error{margin-top:8px;padding:9px 12px;border-radius:8px;background:#fdf0ef;border:1px solid #edc0bd;color:var(--bad);font-size:12.5px}
+.status-error[hidden]{display:none}
+.iframe-tip{background:#fff6dd;border:1px solid #f0d998;color:#7a5b12;border-radius:9px;padding:10px 14px;font-size:12.5px;margin-bottom:16px}
+.iframe-tip[hidden]{display:none}
+.path-row{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap}
+.path-row code{background:#fff;border:1px solid #f0d998;border-radius:6px;padding:4px 8px;font-size:11.5px;word-break:break-all}
+.player-links{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+#audio{display:none;width:100%;margin-top:12px;height:38px}
+#audio.show{display:block}
+.tabs{display:flex;gap:4px;margin:0 0 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.tab{border:0;background:transparent;padding:10px 16px;font-size:13.5px;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+.panel{padding:22px 26px;min-height:240px}
+.panel[hidden]{display:none}
+.script p{margin:0 0 16px;font-size:15px;line-height:1.95;color:#333b48;transition:background .3s,color .3s;border-radius:6px;padding:2px 6px;margin-left:-6px;cursor:pointer}
+.script p:last-child{margin-bottom:0}
+.script p:hover{background:#f1f6fc}
+.script p.active{background:#fff6dd;color:#1e2430}
+.script p.active:hover{background:#fff0c4}
+.points{list-style:none;padding:0;margin:0}
+.points li{position:relative;padding:10px 12px 10px 34px;border-bottom:1px solid #f0f2f6;font-size:14px}
+.points li:last-child{border:0}
+.points li:before{content:"";position:absolute;left:12px;top:19px;width:7px;height:7px;border-radius:99px;background:var(--accent-2)}
+.quiz-item{padding:4px 0 20px;margin-bottom:18px;border-bottom:1px dashed var(--line)}
+.quiz-item:last-child{border:0;margin-bottom:0}
+.quiz-q{font-weight:600;margin-bottom:10px;font-size:14.5px}
+.opt{display:block;width:100%;text-align:left;border:1px solid var(--line);background:#fff;border-radius:9px;padding:9px 13px;margin-bottom:8px;font-size:13.5px}
+.opt:hover{border-color:var(--accent)}
+.opt.correct{background:#eaf7ef;border-color:#a9d9bc;color:var(--ok)}
+.opt.wrong{background:#fdf0ef;border-color:#edc0bd;color:var(--bad)}
+.explain{font-size:12.5px;color:var(--muted);background:#f7f9fb;border-radius:8px;padding:9px 12px;margin-top:6px}
+.note{font-size:12px;color:var(--muted);margin-top:18px;padding-top:14px;border-top:1px solid var(--line)}
+.footer-nav{display:flex;justify-content:space-between;gap:10px;margin-top:20px}
+.footer-nav .btn{flex:1;text-align:center}
+.footer-nav .btn:disabled{opacity:.4;cursor:default}
+.panel-tool{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
+
+/* ---------- 互动实验（Teachable Figures） ---------- */
+.lab-head{margin-bottom:14px}
+.lab-head h3{font-size:18px;margin:0 0 6px;line-height:1.45}
+.lab-head p{margin:0;color:var(--muted);font-size:13px}
+.lab-anchor{margin:11px 0 0;padding:10px 13px;background:var(--accent-soft);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;font-size:12.8px;color:#31445c;line-height:1.8}
+.lab-anchor a{color:var(--accent);font-weight:600;white-space:nowrap}
+.lab-grid{display:block}
+.lab-grid>.lab-controls{margin-top:14px}
+.lab-stage{background:#fbfcfe;border:1px solid var(--line);border-radius:11px;padding:10px}
+.lab-stage svg{width:100%;height:auto;display:block}
+.lab-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--muted);margin-top:6px}
+.lab-legend i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:5px;vertical-align:0}
+.lab-controls{background:#fff;border:1px solid var(--line);border-radius:11px;padding:14px;display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:14px;align-items:start}
+.ctrl{margin-bottom:16px}
+.ctrl:last-child{margin-bottom:0}
+.lab-controls .ctrl{margin-bottom:0}
+.lab-controls>.lab-tools{grid-column:1/-1;margin:0}
+.lab-controls>.switch-row{grid-column:1/-1}
+.ctrl-label{font-size:12.5px;font-weight:600;margin-bottom:7px;display:flex;justify-content:space-between;gap:8px}
+.ctrl-label b{color:var(--accent);font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.seg{display:flex;gap:5px;flex-wrap:wrap}
+.seg button{flex:1;min-width:32px;border:1px solid var(--line);background:#fff;border-radius:7px;padding:6px 3px;font-size:12.5px}
+.seg button:hover{border-color:var(--accent)}
+.seg button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+input[type=range].lab-range{width:100%;accent-color:var(--accent);cursor:pointer}
+.ctrl-help{font-size:11.5px;color:var(--muted);margin-top:7px;line-height:1.65}
+.switch-row{display:flex;align-items:center;gap:9px;font-size:12.5px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#fafbfc;cursor:pointer}
+.switch-row input{width:16px;height:16px;accent-color:var(--accent)}
+.readouts{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:13px 0}
+.ro{background:#f7f9fb;border:1px solid var(--line);border-radius:10px;padding:9px 11px;min-width:0}
+.ro .k{font-size:11px;color:var(--muted);display:block}
+.ro .v{font-size:21px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.5px}
+.ro .u{font-size:11px;color:var(--muted);margin-left:2px}
+.ro .sub{font-size:10.5px;color:var(--muted);display:block;margin-top:1px;line-height:1.5}
+.ro.big{background:var(--accent-soft);border-color:#cfe0f3}
+.ro.big .v{color:var(--accent)}
+.lab-checks{font-size:12px;margin-top:4px}
+.lab-checks .cap{color:var(--muted);font-size:11.5px;margin-bottom:8px}
+.lab-checks .ck{display:flex;align-items:center;gap:9px;margin-bottom:6px}
+.lab-checks .ck span{width:86px;flex:0 0 86px;color:var(--muted);font-size:11.5px}
+.lab-checks .track{flex:1;height:7px;border-radius:99px;background:#eceff4;overflow:hidden}
+.lab-checks .track i{display:block;height:100%;background:var(--accent-2);border-radius:99px}
+.lab-checks .ck b{width:42px;text-align:right;font-variant-numeric:tabular-nums;font-weight:600;font-size:11.5px}
+.lab-step{border-top:1px solid var(--line);margin-top:22px;padding-top:18px}
+.lab-step h4{font-size:14.5px;margin:0 0 8px;display:flex;align-items:center;gap:9px}
+.lab-step h4 em{font-style:normal;background:var(--accent);color:#fff;border-radius:99px;width:21px;height:21px;display:grid;place-items:center;font-size:11.5px;flex:0 0 21px}
+.lab-step p{font-size:13px;margin:0 0 10px;color:#48525f;line-height:1.8}
+.predict-opts{display:grid;gap:7px}
+.predict-opts button{text-align:left;border:1px solid var(--line);background:#fff;border-radius:9px;padding:9px 12px;font-size:13px;line-height:1.6}
+.predict-opts button:hover{border-color:var(--accent)}
+.predict-opts button.picked{background:var(--accent-soft);border-color:#bcd3ec}
+.lab-feedback{font-size:12.5px;border-radius:8px;padding:9px 12px;margin-top:9px;background:#f7f9fb;color:#48525f;line-height:1.75}
+.lab-feedback.good{background:#eaf7ef;color:var(--ok)}
+.lab-feedback.warn{background:#fff6dd;color:#7a5b12}
+.lab-tools{display:flex;gap:8px;flex-wrap:wrap;margin:11px 0}
+.lab-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
+.lab-table th,.lab-table td{border-bottom:1px solid var(--line);padding:7px 8px;text-align:left;font-variant-numeric:tabular-nums}
+.lab-table th{color:var(--muted);font-weight:600;font-size:11px}
+.lab-table tr:last-child td{border-bottom:0}
+.frame-box{width:100%;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-size:13px;line-height:1.7;resize:vertical;min-height:66px;outline:none}
+.frame-box:focus{border-color:var(--accent)}
+.reveal{font-size:12.5px;background:#f7f9fb;border-radius:9px;padding:11px 13px;margin-top:9px;line-height:1.8;color:#3c4757}
+.lab-note{font-size:11px;color:var(--muted);line-height:1.8;margin-top:20px;padding-top:13px;border-top:1px solid var(--line)}
+[data-ref]{cursor:help;border-bottom:1px dotted var(--accent);color:var(--accent)}
+[data-part].lit,[data-ref].lit{filter:drop-shadow(0 0 4px rgba(43,95,158,.6))}
+.dim .lab-hint{display:none}
+.dim .ro .sub{visibility:hidden}
+.lab-empty{text-align:center;padding:30px 18px}
+.lab-empty h3{font-size:17px;margin:0 0 8px}
+.lab-empty p{color:var(--muted);font-size:13px;margin:0 0 16px;line-height:1.8}
+.mini-player{display:none}
+
+@media (max-width:860px){
+  .app{flex-direction:column;height:auto;min-height:100vh}
+  .sidebar{width:100%;flex:none;border-right:0;border-bottom:1px solid var(--line);max-height:44vh}
+  .nav{max-height:26vh}
+  .main{overflow:visible}
+  .inner{padding:20px 18px 60px}
+  .hero h2{font-size:24px}
+  .panel{padding:18px}
+  .lab-controls{grid-template-columns:1fr}
+  .readouts{grid-template-columns:1fr 1fr}
+  .readouts .ro.big{grid-column:1/-1}
+  .lab-controls .seg button{min-width:36px}
+  .mini-player{display:flex;align-items:center;gap:10px;position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(255,255,255,.97);border-top:1px solid var(--line);padding:9px 14px 12px;box-shadow:0 -4px 18px rgba(24,39,66,.08)}
+  .mini-player button{width:36px;height:36px;flex:0 0 36px;border:0;border-radius:99px;background:var(--accent);color:#fff;font-size:12px}
+  .mini-meta{flex:1;min-width:0;font-size:12px}
+  .mini-meta b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
+  .mini-meta span{color:var(--muted);font-variant-numeric:tabular-nums}
+  .mini-track{position:absolute;left:0;right:0;bottom:0;height:3px;background:#eceff4}
+  .mini-track i{display:block;height:100%;background:var(--accent-2);width:0}
+  body{padding-bottom:58px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <h1>智能体设计模式 · 有声精讲</h1>
+      <p id="bookMeta">分章精讲教材</p>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-top"><span>学习进度</span><span id="progressText"></span></div>
+      <div class="bar"><span id="progressBar" style="width:0%"></span></div>
+    </div>
+    <div class="search">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+      <input id="search" type="search" placeholder="搜索章节 / 要点 / 讲稿正文" autocomplete="off">
+    </div>
+    <nav class="nav" id="nav"></nav>
+    <div class="side-foot">基于 Antonio Gulli《Agentic Design Patterns》xindoo 开源中文翻译版编排。配套原书 PDF（321 页）已随项目提供，点顶部「原书 PDF」可对照阅读；仅供个人学习交流。</div>
+  </aside>
+
+  <main class="main">
+    <div class="inner">
+      <div class="iframe-tip" id="iframeTip" hidden>当前页面嵌在预览面板里，浏览器可能禁止出声，弹窗也常被拦截，所以「新窗口打开」可能没反应。<b>请在访达里双击 index.html，或把下面地址粘贴到 Chrome / Safari 地址栏</b>，即可正常播放。只想先听起来的话，点播放器下方「备用播放器」或「打开本讲音频」也可以。
+        <div class="path-row"><code id="localPath"></code><button class="btn" id="copyPath">复制地址</button></div>
+      </div>
+      <div class="topbar">
+        <div class="crumb" id="crumb"></div>
+        <div class="top-actions">
+          <a class="btn" id="newWindowBtn" href="index.html" target="_blank" rel="noopener" title="在独立浏览器窗口打开">在新窗口打开 ↗</a>
+          <button class="btn" id="autoBtn" title="播完自动进入下一讲">自动连播：开</button>
+          <button class="btn" id="downloadScript">导出本讲讲稿</button>
+          <button class="btn" id="downloadAll">导出全部讲稿</button>
+          <a class="btn" id="sourcePdf" href="智能体设计模式_开源中文翻译版.pdf" target="_blank" rel="noopener" title="打开配套原书 PDF（321 页）">原书 PDF ↗</a>
+        </div>
+      </div>
+
+      <div class="hero">
+        <div class="kicker" id="kicker"></div>
+        <h2 id="title"></h2>
+        <p id="subtitle"></p>
+      </div>
+
+      <section class="card player">
+        <div class="player-main">
+          <button class="play" id="playBtn" aria-label="播放/暂停"></button>
+          <div class="pmeta">
+            <div class="pt" id="ptitle"></div>
+            <div class="pd" id="pduration"></div>
+          </div>
+          <div class="small-btns">
+            <button class="icon-btn" id="back15" title="后退 15 秒">−15</button>
+            <button class="icon-btn" id="fwd15" title="前进 15 秒">+15</button>
+            <select id="rate" title="播放倍速" aria-label="播放倍速">
+              <option value="0.75">0.75×</option>
+              <option value="1" selected>1.0×</option>
+              <option value="1.25">1.25×</option>
+              <option value="1.5">1.5×</option>
+              <option value="1.75">1.75×</option>
+              <option value="2">2.0×</option>
+            </select>
+            <input type="range" id="volume" min="0" max="100" value="100" title="音量" aria-label="音量" style="width:76px;accent-color:var(--accent);cursor:pointer">
+          </div>
+        </div>
+        <div class="seek">
+          <input type="range" id="seek" min="0" max="1000" value="0" step="1" aria-label="播放进度">
+          <span class="time" id="time">00:00 / 00:00</span>
+        </div>
+        <div class="hint"><b>打开后不会自动出声，点击左侧蓝色 ▶ 按钮开始播放。</b>空格键播放/暂停 · ← → 快退快进 15 秒 · 点击讲稿任意段落可从该处播放 · 讲稿高亮按精确段落时间轴· 进度自动保存在本机
+          <label class="follow"><input type="checkbox" id="follow" checked>讲稿跟随播放滚动</label>
+        </div>
+        <div class="status-error" id="err" hidden></div>
+        <audio id="audio" controls preload="metadata"></audio>
+        <div class="player-links">
+          <button class="btn" id="nativeBtn">备用播放器</button>
+          <a class="btn" id="openAudio" href="#" target="_blank" rel="noopener">打开本讲音频 ↗</a>
+        </div>
+      </section>
+
+      <div class="tabs" role="tablist">
+        <button class="tab active" role="tab" aria-selected="true" aria-controls="panel-script" data-tab="script">同步讲稿</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="panel-points" data-tab="points">核心要点</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="panel-quiz" data-tab="quiz">自测题</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="panel-lab" data-tab="lab">互动实验</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="panel-nav" data-tab="nav">上一讲 / 下一讲</button>
+      </div>
+
+      <section class="card panel script" id="panel-script" role="tabpanel"></section>
+      <section class="card panel" id="panel-points" role="tabpanel" hidden><ul class="points" id="pointsList"></ul></section>
+      <section class="card panel" id="panel-quiz" role="tabpanel" hidden>
+        <div class="panel-tool"><span>答完即记录在本机，可随时重做。</span><button class="btn" id="resetQuiz">重做本讲自测</button></div>
+        <div id="quizList"></div>
+      </section>
+      <section class="card panel" id="panel-lab" role="tabpanel" hidden><div id="labRoot"></div></section>
+      <section class="card panel" id="panel-nav" role="tabpanel" hidden><div id="nearList"></div></section>
+
+      <div class="footer-nav">
+        <button class="btn" id="prevBtn">← 上一讲</button>
+        <button class="btn" id="doneBtn">标记为本讲已完成</button>
+        <button class="btn" id="nextBtn">下一讲 →</button>
+      </div>
+      <div class="note">讲稿为原书内容的口语化精讲，非逐字朗读；术语以书中译法为准，关键概念附英文原名。音频由本机中文语音合成生成，可离线使用。「互动实验」是配合第 2 讲的教学简化模型，读数为示意期望值，不是实测结果。</div>
+    </div>
+  </main>
+</div>
+
+<div class="mini-player" id="miniPlayer">
+  <button id="miniPlay" aria-label="播放/暂停">▶</button>
+  <div class="mini-meta"><b id="miniTitle"></b><span id="miniTime">00:00 / 00:00</span></div>
+  <div class="mini-track"><i id="miniBar"></i></div>
+</div>
+
+<script src="data.js"></script>
+<script>
+/*
+ * Teachable Figures by ywEdAi (https://github.com/ywEdAi/teachable-figures)
+ * Code: MIT License. Written guidance/content: CC BY 4.0.
+ * Adapted here as an inline, offline predict -> try -> explain exercise.
+ */
+(function(){
+  "use strict";
+  var L = window.LESSONS || [];
+  var KEY = "adp-audio-course-v1";
+  var state = {done:{}, pos:{}, answers:{}, auto:true, rate:1, volume:1, follow:true};
+  try { var saved = JSON.parse(localStorage.getItem(KEY)||"{}"); if(saved && typeof saved==="object") state = Object.assign(state, saved); } catch(e){}
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+
+  var $ = function(id){ return document.getElementById(id); };
+  var audio = $("audio"), cur = 0, playing = false, lastHi = -1, dragging = false, pendingResume = 0;
+  var lastSave = 0, timingCache = {};
+  var playBtn = $("playBtn");
+  var ICON_PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  var ICON_PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>';
+
+  L.forEach(function(l){
+    l._hay = (l.title + " " + l.subtitle + " " + l.group + " " + l.points.join(" ") + " " + l.script).toLowerCase();
+  });
+  var TOTAL = L.reduce(function(a,l){ return a + (l.duration||0); }, 0);
+
+  function mmss(s){ s = Math.max(0, Math.floor(s||0)); return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0"); }
+  function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]; }); }
+  function audioSrc(l){ return encodeURI(l.audio); }
+  function safeName(s){ return String(s).replace(/[\\\/:*?"<>|]/g, "_"); }
+  function syncPlayUI(){ playBtn.innerHTML = playing ? ICON_PAUSE : ICON_PLAY; $("miniPlay").textContent = playing ? "❚❚" : "▶"; }
+
+  // 讲稿时间轴：按段落字符数分配语音时长，并预留段间停顿。
+  // 高亮与「点击段落跳转」共用同一份映射，避免两者错位。
+  function timings(l){
+    if(timingCache[l.id]) return timingCache[l.id];
+    var paras = l.script.split(/\n\n+/).filter(function(p){ return p.trim(); }).map(function(p){ return p.trim(); });
+    var D = l.duration || 1, starts;
+    if(Array.isArray(l.timeline) && l.timeline.length === paras.length){
+      // 音频重建后写入的逐段精确起点；无此字段时回退到字符比例估算
+      starts = l.timeline.slice();
+    } else {
+      var GAP = 0.5, chars = 0;
+      paras.forEach(function(p){ chars += p.length; });
+      chars = chars || 1;
+      var speech = Math.max(1, D - GAP * Math.max(0, paras.length-1));
+      starts = []; var acc = 0;
+      paras.forEach(function(p,i){
+        starts.push(acc);
+        acc += p.length / chars * speech + (i < paras.length-1 ? GAP : 0);
+      });
+    }
+    return (timingCache[l.id] = {paras:paras, starts:starts, duration:D});
+  }
+
+  function buildNav(filter){
+    filter = (filter||"").trim().toLowerCase();
+    var nav = $("nav"), html = "", lastGroup = "";
+    L.forEach(function(l,i){
+      if(filter && l._hay.indexOf(filter) < 0) return;
+      if(l.group !== lastGroup){ html += '<div class="group-title">'+esc(l.group)+'</div>'; lastGroup = l.group; }
+      html += '<button class="chapter'+(i===cur?" active":"")+'" data-i="'+i+'">'+
+        '<span class="no">'+String(l.num).padStart(2,"0")+'</span>'+
+        '<span class="txt"><span class="t">'+esc(l.title)+'</span><span class="s">'+mmss(l.duration)+' · '+esc(l.subtitle)+'</span></span>'+
+        '<span class="dot'+(state.done[l.id]?" done":"")+'"></span></button>';
+    });
+    if(!html) html = '<div class="group-title">没有匹配的章节</div>';
+    nav.innerHTML = html;
+    Array.prototype.forEach.call(nav.querySelectorAll(".chapter"), function(b){
+      b.onclick = function(){ load(parseInt(b.dataset.i,10), true); };
+    });
+  }
+
+  function updateProgress(){
+    var n = L.filter(function(l){ return state.done[l.id]; }).length;
+    $("progressText").textContent = n + " / " + L.length + " 讲";
+    $("progressBar").style.width = (L.length ? n/L.length*100 : 0).toFixed(1) + "%";
+  }
+
+  function load(i, autoplay){
+    if(i<0 || i>=L.length) return;
+    if(playing) audio.pause();
+    cur = i; var l = L[i], T = timings(l);
+    document.title = l.title + " · 智能体设计模式有声精讲";
+    $("crumb").innerHTML = esc(l.group) + ' / <b>第 '+l.num+' 讲</b>';
+    $("kicker").textContent = "第 "+String(l.num).padStart(2,"0")+" 讲 · 约 "+Math.round(l.duration/60)+" 分钟";
+    $("title").textContent = l.title;
+    $("subtitle").textContent = l.subtitle;
+    $("ptitle").textContent = "正在学习：" + l.title;
+    $("miniTitle").textContent = "第 "+l.num+" 讲 · "+l.title;
+    var resume = state.pos[l.id] || 0;
+    pendingResume = (resume > 10 && resume < l.duration - 20) ? resume : 0;
+    $("pduration").textContent = "第 "+l.num+" / "+L.length+" 讲 · 总时长 "+mmss(l.duration)
+      + (pendingResume ? " · 已定位到上次听到的 "+mmss(pendingResume) : "");
+    audio.src = audioSrc(l);
+    $("openAudio").href = audioSrc(l);
+    showErr("");
+    audio.playbackRate = state.rate;
+    audio.volume = state.volume;
+    $("seek").value = 0;
+    $("time").textContent = "00:00 / " + mmss(l.duration);
+    $("miniTime").textContent = "00:00 / " + mmss(l.duration);
+    $("miniBar").style.width = "0%";
+
+    $("panel-script").innerHTML = T.paras.map(function(p,idx){
+      return '<p data-p="'+idx+'" title="点击从这一段开始播放">'+esc(p)+'</p>';
+    }).join("");
+    $("pointsList").innerHTML = l.points.map(function(p){ return '<li>'+esc(p)+'</li>'; }).join("");
+    renderQuiz(l);
+    renderNear(i);
+    renderLab(l);
+    $("prevBtn").disabled = (i===0);
+    $("nextBtn").disabled = (i===L.length-1);
+    $("doneBtn").textContent = state.done[l.id] ? "✓ 已完成（点击取消）" : "标记为本讲已完成";
+    lastHi = -1;
+    buildNav($("search").value);
+    updateProgress();
+    document.querySelector(".main").scrollTop = 0;
+    window.scrollTo(0,0);
+    if(autoplay) play();
+  }
+
+  function renderQuiz(l){
+    var ans = state.answers[l.id] || {};
+    $("quizList").innerHTML = l.quiz.map(function(q,qi){
+      var chosen = ans[qi];
+      var opts = q.options.map(function(o,oi){
+        var cls = "opt";
+        if(chosen !== undefined){
+          if(oi === q.answer) cls += " correct";
+          else if(oi === chosen) cls += " wrong";
+        }
+        return '<button class="'+cls+'" data-q="'+qi+'" data-o="'+oi+'"'+(chosen!==undefined?" disabled":"")+'>'+String.fromCharCode(65+oi)+'. '+esc(o)+'</button>';
+      }).join("");
+      var ex = chosen!==undefined ? '<div class="explain">'+(chosen===q.answer?"回答正确。":"再想一下：")+esc(q.explain)+'</div>' : '';
+      return '<div class="quiz-item"><div class="quiz-q">'+(qi+1)+'. '+esc(q.q)+'</div>'+opts+ex+'</div>';
+    }).join("");
+    Array.prototype.forEach.call($("quizList").querySelectorAll(".opt"), function(b){
+      b.onclick = function(){
+        var qi = parseInt(b.dataset.q,10), oi = parseInt(b.dataset.o,10);
+        if(!state.answers[l.id]) state.answers[l.id] = {};
+        state.answers[l.id][qi] = oi; save(); renderQuiz(l);
+      };
+    });
+  }
+  $("resetQuiz").onclick = function(){ delete state.answers[L[cur].id]; save(); renderQuiz(L[cur]); };
+
+  function renderNear(i){
+    var items = [];
+    for(var j=Math.max(0,i-2); j<=Math.min(L.length-1,i+2); j++){
+      items.push('<button class="btn" style="display:block;width:100%;text-align:left;margin-bottom:8px;'+(j===i?"background:var(--accent-soft);border-color:#bcd3ec":"")+'" data-j="'+j+'">第 '+L[j].num+' 讲 · '+esc(L[j].title)+' <span style="color:var(--muted);float:right">'+mmss(L[j].duration)+'</span></button>');
+    }
+    $("nearList").innerHTML = items.join("");
+    Array.prototype.forEach.call($("nearList").querySelectorAll("button"), function(b){
+      b.onclick = function(){ load(parseInt(b.dataset.j,10), true); switchTab("script"); };
+    });
+  }
+
+  var TAB_NAMES = ["script","points","quiz","lab","nav"];
+  function switchTab(name){
+    Array.prototype.forEach.call(document.querySelectorAll(".tab"), function(t){
+      var on = t.dataset.tab === name;
+      t.classList.toggle("active", on);
+      t.setAttribute("aria-selected", on ? "true" : "false");
+    });
+    TAB_NAMES.forEach(function(n){ $("panel-"+n).hidden = (n!==name); });
+  }
+  Array.prototype.forEach.call(document.querySelectorAll(".tab"), function(t){
+    t.onclick = function(){ switchTab(t.dataset.tab); };
+  });
+
+  function showErr(msg){
+    var box = $("err");
+    box.textContent = msg || "";
+    box.hidden = !msg;
+  }
+  function play(){
+    showErr("");
+    var p = audio.play();
+    if(p && p.then){
+      p.then(function(){ playing=true; syncPlayUI(); })
+       .catch(function(e){
+         playing=false; syncPlayUI();
+         showErr("播放被浏览器拦截（"+(e.name||"未知限制")+"）。请点顶部「在新窗口打开」，或点下方「备用播放器」/「打开本讲音频」。");
+       });
+    }
+  }
+  function pause(){ audio.pause(); playing=false; syncPlayUI(); }
+  playBtn.onclick = function(){ playing ? pause() : play(); };
+  $("miniPlay").onclick = function(){ playing ? pause() : play(); };
+  audio.onpause = function(){ playing=false; syncPlayUI(); save(); };
+  audio.onplay = function(){ playing=true; syncPlayUI(); showErr(""); };
+  audio.onerror = function(){
+    var code = audio.error ? audio.error.code : "未知";
+    showErr("音频加载失败（错误码 "+code+"）。请确认 audio 文件夹与本网页在同一目录，或点「打开本讲音频」检查。");
+  };
+  $("nativeBtn").onclick = function(){ audio.classList.toggle("show"); };
+  $("copyPath").onclick = function(){
+    var t = document.createElement("textarea");
+    t.value = $("localPath").textContent;
+    document.body.appendChild(t); t.select();
+    try { document.execCommand("copy"); this.textContent = "已复制"; }
+    catch(e) { this.textContent = "请手动选中复制"; }
+    t.remove();
+  };
+  audio.onended = function(){
+    state.done[L[cur].id] = true; save(); updateProgress(); buildNav($("search").value);
+    if(state.auto && cur < L.length-1) load(cur+1, true); else pause();
+  };
+  audio.onloadedmetadata = function(){
+    if(pendingResume){ try{ audio.currentTime = pendingResume; }catch(e){} pendingResume = 0; }
+    $("time").textContent = mmss(audio.currentTime)+" / "+mmss(audio.duration||L[cur].duration);
+  };
+  audio.ontimeupdate = function(){
+    var d = audio.duration || L[cur].duration || 1;
+    if(!dragging) $("seek").value = Math.round(audio.currentTime/d*1000);
+    var txt = mmss(audio.currentTime)+" / "+mmss(d);
+    $("time").textContent = txt;
+    $("miniTime").textContent = txt;
+    $("miniBar").style.width = (audio.currentTime/d*100).toFixed(2)+"%";
+    if(audio.currentTime > 2) state.pos[L[cur].id] = Math.floor(audio.currentTime);
+    var now = Date.now();
+    if(now - lastSave > 3000){ save(); lastSave = now; }
+    if(audio.currentTime/d > 0.96 && !state.done[L[cur].id]){ state.done[L[cur].id]=true; save(); updateProgress(); buildNav($("search").value); }
+    highlightTime(audio.currentTime);
+  };
+
+  function highlightTime(t){
+    var T = timings(L[cur]);
+    var ps = $("panel-script").querySelectorAll("p");
+    if(!ps.length || !T.starts.length) return;
+    var idx = 0;
+    for(var k=0;k<T.starts.length;k++){ if(t >= T.starts[k]) idx = k; else break; }
+    if(idx === lastHi) return;
+    lastHi = idx;
+    for(var j=0;j<ps.length;j++) ps[j].classList.toggle("active", j===idx);
+    if(state.follow && !$("panel-script").hidden){
+      var el = ps[idx], box = document.querySelector(".main");
+      if(el && box){
+        var r = el.getBoundingClientRect(), br = box.getBoundingClientRect();
+        if(r.bottom > br.bottom - 48 || r.top < br.top){
+          box.scrollTo({top: Math.max(0, box.scrollTop + (r.top - br.top) - box.clientHeight*0.3), behavior:"smooth"});
+        }
+      }
+    }
+  }
+
+  $("panel-script").onclick = function(e){
+    var p = e.target && e.target.closest ? e.target.closest("p[data-p]") : null;
+    if(!p) return;
+    var T = timings(L[cur]), idx = parseInt(p.dataset.p,10);
+    try { audio.currentTime = T.starts[idx] || 0; } catch(err){}
+    lastHi = -1;
+    highlightTime(T.starts[idx] || 0);
+  };
+
+  $("seek").oninput = function(){ dragging = true; var d = audio.duration||L[cur].duration||1; $("time").textContent = mmss(d*this.value/1000)+" / "+mmss(d); };
+  $("seek").onchange = function(){ var d = audio.duration||L[cur].duration||1; audio.currentTime = d*this.value/1000; dragging=false; };
+  $("back15").onclick = function(){ audio.currentTime = Math.max(0,audio.currentTime-15); };
+  $("fwd15").onclick = function(){ audio.currentTime = Math.min(audio.duration||9999,audio.currentTime+15); };
+  $("rate").onchange = function(){ state.rate = parseFloat(this.value); audio.playbackRate = state.rate; save(); };
+  $("volume").oninput = function(){ state.volume = Math.min(1,Math.max(0,parseInt(this.value,10)/100)); audio.volume = state.volume; save(); };
+  $("follow").onchange = function(){ state.follow = this.checked; save(); };
+  $("prevBtn").onclick = function(){ if(cur>0) load(cur-1, playing); };
+  $("nextBtn").onclick = function(){ if(cur<L.length-1) load(cur+1, playing); };
+  $("doneBtn").onclick = function(){
+    var id = L[cur].id;
+    if(state.done[id]) delete state.done[id]; else state.done[id]=true;
+    save(); updateProgress(); buildNav($("search").value);
+    $("doneBtn").textContent = state.done[id] ? "✓ 已完成（点击取消）" : "标记为本讲已完成";
+  };
+  $("autoBtn").onclick = function(){
+    state.auto = !state.auto; save();
+    this.textContent = "自动连播：" + (state.auto?"开":"关");
+    this.classList.toggle("on", state.auto);
+  };
+  $("autoBtn").textContent = "自动连播：" + (state.auto?"开":"关");
+  $("autoBtn").classList.toggle("on", state.auto);
+  $("rate").value = String(state.rate);
+  $("volume").value = String(Math.round(state.volume*100));
+  $("follow").checked = !!state.follow;
+  audio.playbackRate = state.rate;
+  audio.volume = state.volume;
+  $("search").oninput = function(){ buildNav(this.value); };
+
+  function download(name, text){
+    var blob = new Blob([text], {type:"text/markdown;charset=utf-8"});
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  }
+  function md(l){
+    return "# 第 "+l.num+" 讲 · "+l.title+"\n\n> "+l.subtitle+" · "+l.group+" · 约 "+Math.round(l.duration/60)+" 分钟\n\n"
+      + l.script + "\n\n## 核心要点\n\n" + l.points.map(function(p){return "- "+p;}).join("\n")
+      + "\n\n## 自测题\n\n" + l.quiz.map(function(q,i){
+          return (i+1)+". "+q.q+"\n" + q.options.map(function(o,j){return "   "+String.fromCharCode(65+j)+". "+o;}).join("\n")
+            + "\n   答案："+String.fromCharCode(65+q.answer)+"。 "+q.explain;
+        }).join("\n\n") + "\n";
+  }
+  $("downloadScript").onclick = function(){ download("第"+L[cur].num+"讲_"+safeName(L[cur].title)+".md", md(L[cur])); };
+  $("downloadAll").onclick = function(){ download("智能体设计模式_有声精讲_全部讲稿.md", L.map(md).join("\n---\n\n")); };
+
+  document.addEventListener("keydown", function(e){
+    var tag = document.activeElement ? document.activeElement.tagName : "";
+    if(/INPUT|SELECT|TEXTAREA|BUTTON|A/.test(tag)) return;
+    if(e.code==="Space"){ e.preventDefault(); playing?pause():play(); }
+    else if(e.code==="ArrowLeft"){ e.preventDefault(); audio.currentTime=Math.max(0,audio.currentTime-15); }
+    else if(e.code==="ArrowRight"){ e.preventDefault(); audio.currentTime=Math.min(audio.duration||9999,audio.currentTime+15); }
+  });
+  window.addEventListener("pagehide", save);
+  document.addEventListener("visibilitychange", function(){ if(document.hidden) save(); });
+
+  /* ================= 互动实验：提示词链 =================
+     Teaching spec (self-learner, zh-CN):
+       anchor  第 2 讲「错误会沿着链条放大…每一步的输出格式可控」
+       claim   拆链降低单步负荷，但每多一次交接就多一次信息损失
+       predict 误解：步数越多越可靠 / 格式只影响观感
+       insight 自由文本下 4→8 步整链成功率下降；改 JSON 后回升
+       caveat  示意公式的期望值，参数为教学选定，非实测、非工程仿真
+  */
+  var FIGURES = {
+    "01": {
+      title: "把任务拆成更多步，就一定更可靠吗？",
+      lead: "先固定 4 步 + JSON 记下读数；再关掉结构化、把步数拉到 8，看数字怎么走。",
+      anchor: "如果第一步吐出一段含糊的自然语言，第二步很容易理解偏，错误会沿着链条放大。所以提示词链真正的可靠性，来自「每一步的输出格式可控」。—— 第 2 讲 · 提示词链",
+      predict: [
+        "步数越多，交付成功率越高，拆分总是划算的",
+        "步数只影响调用成本，不影响交付成功率",
+        "要看步骤之间用什么格式交接：格式不同，结论可能相反"
+      ],
+      answer: 2,
+      frame: "当交接格式从 ___ 换成 ___，端到端成功率从 ___ 变到 ___，因为单步负荷 ___，而交接损失 ___。"
+    }
+  };
+  var STEP_CHOICES = [1,2,3,4,6,8];
+  var labDefault = function(){ return {steps:4, structured:true, constraints:12, predict:-1, trials:[], faded:false, transfer:-1}; };
+  var lab = labDefault();
+
+  // 纯模型：所有图形、读数、解释与迁移题共用同一份派生结果。
+  // 示意参数：单步负荷惩罚 0.052、交接保真度 JSON 0.98 / 自由文本 0.86。
+  function labModel(cfg){
+    var n = Math.max(1, Math.min(8, cfg.steps|0));
+    var C = Math.max(6, Math.min(20, cfg.constraints|0));
+    var structured = !!cfg.structured;
+    var load = C / n;
+    var pStep = Math.min(0.985, Math.max(0.30, 0.985 - 0.052 * Math.pow(Math.max(0, load-1), 1.3)));
+    var fidelity = structured ? 0.98 : 0.86;
+    var handoffs = n - 1;
+    var overall = Math.pow(pStep, n) * Math.pow(fidelity, handoffs);
+    return {
+      n:n, C:C, structured:structured, load:load, pStep:pStep,
+      fidelity:fidelity, loss:1-fidelity, handoffs:handoffs,
+      chain:Math.pow(pStep,n), transfer:Math.pow(fidelity,handoffs),
+      overall:overall,
+      cost:n + 0.3*handoffs,
+      checks:[
+        {name:"总结覆盖要点", value:pStep},
+        {name:"趋势数据准确", value:pStep * Math.pow(fidelity, Math.max(1,handoffs))},
+        {name:"邮件完整写出", value:overall}
+      ]
+    };
+  }
+  function pct(x){ return Math.round(x*100) + "%"; }
+
+  function labHTML(f){
+    var preds = f.predict.map(function(p,i){
+      return '<button data-pred="'+i+'">'+String.fromCharCode(65+i)+'. '+esc(p)+'</button>';
+    }).join("");
+    var segs = STEP_CHOICES.map(function(n){
+      return '<button data-n="'+n+'">'+n+(n===1?" 次":" 步")+'</button>';
+    }).join("");
+    return ''+
+    '<div class="lab-head">'+
+      '<h3>'+esc(f.title)+'</h3>'+
+      '<p>'+esc(f.lead)+'</p>'+
+      '<div class="lab-anchor"><b>结论锚句（本讲讲稿的口语化转述）：</b>'+esc(f.anchor)+
+        '<br><b>原书依据：</b>第 1 章《提示词链》「结构化输出的作用」，PDF 第 8 页：「提示词链的可靠性高度依赖于步骤之间传递的数据完整性……指定结构化输出格式（如 JSON 或 XML）至关重要」；第 7 页把「错误传播：早期错误被放大」列为单一提示词的五种失败之一。'+
+        ' <a href="智能体设计模式_开源中文翻译版.pdf#page=8" target="_blank" rel="noopener">打开原书第 8 页 ↗</a>'+
+        '<br><span style="color:#6b7482">下面的数值模型是把这条结论做成可操作实验的教学简化，不是原书中的定量结论。</span></div>'+
+    '</div>'+
+
+    '<div class="lab-step" style="border-top:0;margin-top:0;padding-top:0" data-step="predict">'+
+      '<h4><em>1</em>先做一个预测</h4>'+
+      '<p>把一条提示词链从 4 步拆到 8 步，端到端交付成功率会怎样？先选一个，再用下面的控件验证。答案可以改，也可以直接跳过先去操作。</p>'+
+      '<div class="predict-opts" id="predictOpts">'+preds+'</div>'+
+      '<div class="lab-feedback" id="predictFeedback" hidden></div>'+
+    '</div>'+
+
+    '<div class="lab-grid" style="margin-top:18px">'+
+      '<div>'+
+        '<div class="lab-stage">'+
+          '<svg id="labSvg" viewBox="0 0 720 250" role="img" aria-label="提示词链示意图：步骤节点、交接箭头与整链成功率"></svg>'+
+          '<div class="lab-legend">'+
+            '<span><i style="background:#2b5f9e"></i><span data-ref="step">步骤节点（单步负荷）</span></span>'+
+            '<span><i style="background:#0f7a6a"></i><span data-ref="handoff">结构化交接 −2%</span></span>'+
+            '<span><i style="background:#b3403b"></i><span data-ref="handoff">自由文本交接 −14%</span></span>'+
+          '</div>'+
+        '</div>'+
+        '<div class="readouts" data-part="readout">'+
+          '<div class="ro big"><span class="k">端到端交付成功率</span><span class="v" id="roOverall">--</span><span class="u">%</span><span class="sub">整条链每一步都正确的期望概率</span></div>'+
+          '<div class="ro"><span class="k">单步成功率</span><span class="v" id="roStep">--</span><span class="u">%</span><span class="sub">由约束数 ÷ 步数决定</span></div>'+
+          '<div class="ro"><span class="k">相对成本指数</span><span class="v" id="roCost">--</span><span class="sub" id="roCostSub">调用 n 次 + 交接开销</span></div>'+
+        '</div>'+
+        '<div class="lab-checks" data-part="deliverable">'+
+          '<div class="cap">交付物三项检查 · 期望通过率</div>'+
+          '<div id="checkList"></div>'+
+        '</div>'+
+        '<p class="ctrl-help lab-hint">读数来自示意公式的期望值，不是一次真实运行的结果；图中「负荷」指该步要同时满足的约束条数。</p>'+
+      '</div>'+
+      '<div class="lab-controls">'+
+        '<div class="ctrl">'+
+          '<div class="ctrl-label"><span>① 拆成几步</span><b id="valSteps"></b></div>'+
+          '<div class="seg" id="stepSeg">'+segs+'</div>'+
+          '<div class="ctrl-help lab-hint">步数越多，<span data-ref="step">单步负荷</span>越低；但<span data-ref="handoff">交接</span>次数也越多。</div>'+
+        '</div>'+
+        '<div class="ctrl">'+
+          '<div class="ctrl-label"><span>② 步骤间输出格式</span><b id="valFormat"></b></div>'+
+          '<div class="seg" id="fmtSeg"><button data-v="1">结构化 JSON</button><button data-v="0">自由文本</button></div>'+
+          '<div class="ctrl-help lab-hint">结构化交接保真度 0.98，自由文本 0.86（教学示意值）。</div>'+
+        '</div>'+
+        '<div class="ctrl">'+
+          '<div class="ctrl-label"><span>③ 任务约束总数</span><b id="valC"></b></div>'+
+          '<input type="range" class="lab-range" id="cRange" min="6" max="20" step="1" value="12" aria-label="任务约束总数">'+
+          '<div class="ctrl-help lab-hint">模拟「报告要同时满足多少条要求」。先保持 12 不变，只改一个变量做对比。</div>'+
+        '</div>'+
+        '<div class="lab-tools"><button class="btn" id="trialBtn">记入对比</button><button class="btn" id="labReset">重置实验</button></div>'+
+        '<label class="switch-row"><input type="checkbox" id="fadeChk"><span>撤掉提示，自己先判断</span></label>'+
+      '</div>'+
+    '</div>'+
+
+    '<div id="trialWrap" hidden>'+
+      '<div class="lab-step">'+
+        '<h4><em>2</em>做两组只差一个变量的对比</h4>'+
+        '<p>点「记入对比」把当前配置存一行。试着让两组只差一个变量：例如同为 4 步，只切换交接格式；或者同为 JSON，只把 4 步改成 8 步。</p>'+
+        '<div id="trialTable"></div>'+
+      '</div>'+
+    '</div>'+
+
+    '<div class="lab-step" data-step="explain">'+
+      '<h4><em>3</em>用自己的话解释</h4>'+
+      '<p>句子框架：'+esc(f.frame)+'</p>'+
+      '<textarea class="frame-box" id="frameBox" placeholder="先写一句自己的解释，再对照参考解释……"></textarea>'+
+      '<div class="lab-tools"><button class="btn" id="revealExplainBtn">查看参考解释</button></div>'+
+      '<div class="reveal" id="explainReveal" hidden></div>'+
+    '</div>'+
+
+    '<div class="lab-step" data-step="transfer">'+
+      '<h4><em>4</em>换一个新情境（撤支架练习）</h4>'+
+      '<p>一条 6 步链，每步都用自由文本交接，任务有 12 条约束，中途不能人工检查。<b>只准改一处</b>，你会先改哪里？先在心里判断，再选。</p>'+
+      '<div class="predict-opts" id="transferOpts">'+
+        '<button data-t="0">A. 把 6 步合并成 3 步，减少交接次数</button>'+
+        '<button data-t="1">B. 把步骤间交接改成结构化 JSON</button>'+
+        '<button data-t="2">C. 换一个能力更强的模型，结构不动</button>'+
+      '</div>'+
+      '<div class="lab-feedback" id="transferFeedback" hidden></div>'+
+      '<div class="lab-tools"><button class="btn" id="revealTransferBtn">查看参考思路</button></div>'+
+      '<div class="reveal" id="transferReveal" hidden></div>'+
+    '</div>'+
+
+    '<div class="lab-note">'+
+      '互动实验改编自 <b>Teachable Figures</b> by ywEdAi（https://github.com/ywEdAi/teachable-figures），代码 MIT、书面内容 CC BY 4.0。<br>'+
+      '教学简化模型：成功率是示意公式的期望值；单步负荷惩罚、交接保真度等参数均为演示选定，不是实测数据，未建模模型能力、重试、上下文窗口与并行分支，也不是工程或性能仿真；学习效果未经验证。'+
+    '</div>';
+  }
+
+  function svgFor(m, faded){
+    var n = m.n, W = 720;
+    var slot = n===1 ? 210 : (W-24)/(n+1);
+    var x0 = (W - slot*(n+1))/2;
+    var nodeW = Math.min(86, slot-12), nodeH = 76, y = 50;
+    var s = [];
+    s.push('<rect x="0" y="0" width="720" height="250" fill="#fbfcfe"/>');
+    s.push('<text x="12" y="22" font-size="12" fill="#6b7482">任务：把一份市场报告变成给营销团队的邮件 · 共 '+m.C+' 条约束 · '+(n===1?"单一提示词":n+" 步链条")+'</text>');
+    for(var i=0;i<n;i++){
+      var cx = x0 + slot*(i+0.5), x = cx-nodeW/2;
+      s.push('<g data-part="step">');
+      s.push('<rect x="'+x+'" y="'+y+'" width="'+nodeW+'" height="'+nodeH+'" rx="9" fill="#ffffff" stroke="#c9d8ea" stroke-width="1.4"/>');
+      s.push('<rect x="'+(x+8)+'" y="'+(y+9)+'" width="'+(nodeW-16)+'" height="5" rx="2.5" fill="#eceff4"/>');
+      s.push('<rect x="'+(x+8)+'" y="'+(y+9)+'" width="'+((nodeW-16)*m.pStep)+'" height="5" rx="2.5" fill="#2b5f9e"/>');
+      s.push('<text x="'+cx+'" y="'+(y+35)+'" text-anchor="middle" font-size="'+(nodeW<70?10.5:11.5)+'" fill="#1e2430" font-weight="600">'+(n===1?"全部任务":"步骤 "+(i+1))+'</text>');
+      s.push('<text x="'+cx+'" y="'+(y+53)+'" text-anchor="middle" font-size="10.5" fill="#6b7482">负荷 '+m.load.toFixed(1)+'</text>');
+      s.push('<text x="'+cx+'" y="'+(y+68)+'" text-anchor="middle" font-size="10.5" fill="#2b5f9e">'+pct(m.pStep)+' 正确</text>');
+      s.push('</g>');
+    }
+    var col = m.structured ? "#0f7a6a" : "#b3403b";
+    for(var j=0;j<n-1;j++){
+      var x1 = x0 + slot*(j+0.5) + nodeW/2;
+      var x2 = x0 + slot*(j+1.5) - nodeW/2;
+      var mid = (x1+x2)/2, ym = y+nodeH/2;
+      s.push('<g data-part="handoff">');
+      s.push('<line x1="'+x1+'" y1="'+ym+'" x2="'+x2+'" y2="'+ym+'" stroke="'+col+'" stroke-width="2"'+(m.structured?"":' stroke-dasharray="4 3"')+'/>');
+      s.push('<path d="M'+(x2-5)+' '+(ym-4)+' L'+x2+' '+ym+' L'+(x2-5)+' '+(ym+4)+'" fill="none" stroke="'+col+'" stroke-width="2"/>');
+      if(slot > 56) s.push('<text x="'+mid+'" y="'+(ym-9)+'" text-anchor="middle" font-size="10" fill="'+col+'">−'+pct(m.loss)+'</text>');
+      s.push('</g>');
+    }
+    var lastX = x0 + slot*(n-0.5) + nodeW/2;
+    var dcx = x0 + slot*(n+0.5), dx = dcx-nodeW/2;
+    s.push('<line x1="'+lastX+'" y1="'+(y+nodeH/2)+'" x2="'+dx+'" y2="'+(y+nodeH/2)+'" stroke="#9aa8ba" stroke-width="2"/>');
+    s.push('<path d="M'+(dx-5)+' '+(y+nodeH/2-4)+' L'+dx+' '+(y+nodeH/2)+' L'+(dx-5)+' '+(y+nodeH/2+4)+'" fill="none" stroke="#9aa8ba" stroke-width="2"/>');
+    s.push('<g data-part="deliverable">');
+    s.push('<rect x="'+dx+'" y="'+y+'" width="'+nodeW+'" height="'+nodeH+'" rx="9" fill="#eaf1fa" stroke="#2b5f9e" stroke-width="1.6"/>');
+    s.push('<text x="'+dcx+'" y="'+(y+31)+'" text-anchor="middle" font-size="11.5" fill="#1e2430" font-weight="600">交付</text>');
+    s.push('<text x="'+dcx+'" y="'+(y+48)+'" text-anchor="middle" font-size="10.5" fill="#6b7482">邮件</text>');
+    s.push('<text x="'+dcx+'" y="'+(y+67)+'" text-anchor="middle" font-size="13" fill="#2b5f9e" font-weight="700">'+pct(m.overall)+'</text>');
+    s.push('</g>');
+    if(!faded){
+      s.push('<text x="12" y="166" font-size="11.5" fill="#48525f">整链期望成功率 = 单步成功率 ^ '+n+' × 交接保真度 ^ '+m.handoffs+' = '+pct(m.overall)+'</text>');
+    }
+    s.push('<rect x="12" y="182" width="696" height="11" rx="5.5" fill="#eceff4"/>');
+    s.push('<rect x="12" y="182" width="'+(696*m.overall)+'" height="11" rx="5.5" fill="'+col+'"/>');
+    s.push('<text x="12" y="217" font-size="11" fill="#6b7482">'+(n===1
+      ? "没有交接损失，但所有约束压在一次调用里，单步负荷最高。"
+      : (m.structured
+        ? "每步要求 JSON 输出：交接保真度 0.98，拆分的收益能留住。"
+        : "步骤间传自由文本：交接保真度 0.86，错误沿链放大，拆得越细反而越吃亏。"))+'</text>');
+    s.push('<text x="12" y="238" font-size="10.5" fill="#6b7482">调用 '+n+' 次 · 交接 '+m.handoffs+' 次 · 相对成本指数 '+m.cost.toFixed(1)+'</text>');
+    return s.join("");
+  }
+
+  function drawTrials(){
+    var wrap = $("trialWrap"), box = $("trialTable");
+    if(!wrap || !box) return;
+    if(!lab.trials.length){ wrap.hidden = true; return; }
+    wrap.hidden = false;
+    box.innerHTML = '<table class="lab-table"><thead><tr><th>#</th><th>步数</th><th>交接格式</th><th>约束</th><th>单步</th><th>整链</th><th>成本</th></tr></thead><tbody>'+
+      lab.trials.map(function(t,i){
+        return '<tr><td>'+(i+1)+'</td><td>'+t.n+'</td><td>'+(t.structured?"JSON":"自由文本")+'</td><td>'+t.C+'</td><td>'+pct(t.pStep)+'</td><td><b>'+pct(t.overall)+'</b></td><td>'+t.cost.toFixed(1)+'</td></tr>';
+      }).join("")+
+      '</tbody></table><p class="ctrl-help">让两组只差一个变量，才能把差异归因于它。点「重置实验」会清空这张表。</p>';
+  }
+
+  function explainHTML(){
+    var m = labModel(lab);
+    var single = labModel({steps:1, structured:m.structured, constraints:m.C});
+    return '拆链把 '+m.C+' 条约束摊到 '+m.n+' 步，每步负荷从 '+m.C+' 降到 '+m.load.toFixed(1)+'，<span data-ref="step">单步成功率</span>升到 '+pct(m.pStep)+'；但每多一步就多一次<span data-ref="handoff">交接</span>，损失按交接次数累积（保真度 ^ '+m.handoffs+' = '+pct(m.transfer)+'）。当前整链 '+pct(m.overall)+'。所以「拆得越细越好」只在交接可控时成立；要求每步输出 JSON/XML 把交接损失压低，拆分才真正划算——这正是本讲锚句说的「每一步的输出格式可控」。<br>'+
+      '另一个容易滑过去的反面：「那不如不拆，一次调用更省事」。单一提示词没有交接损失，但所有约束压在一次调用里，单步负荷最高，本模型下只有 '+pct(single.overall)+'。成本最低不等于交付最可靠。';
+  }
+
+  function predictMessage(i){
+    if(i===2) return {cls:"good", text:"方向对。现在把它验证出来：先固定 4 步 + JSON 记一行，再把格式切到自由文本记一行；然后分别把步数拉到 8，看两组结论是否还一致。"};
+    if(i===0) return {cls:"warn", text:"这是最常见的想法：把「单步变简单」直接当成「整体变可靠」。请固定约束数 12、关掉结构化，比较 4 步和 8 步的整链读数——箭头上的交接损失会给出反例。"};
+    return {cls:"warn", text:"留意步骤之间的箭头：步数变化同时改变了两件事——单步负荷下降，交接次数上升。成本只是其中一项，成功率也会动。"};
+  }
+
+  function transferMessage(i, m){
+    var base = labModel({steps:6, structured:false, constraints:12});
+    var json = labModel({steps:6, structured:true, constraints:12});
+    var merged = labModel({steps:3, structured:false, constraints:12});
+    if(i===1) return {cls:"good", text:"对。按本示意模型，6 步自由文本约 "+pct(base.overall)+"，只把交接改成 JSON 后约 "+pct(json.overall)+"；合并成 3 步只有约 "+pct(merged.overall)+"。先堵住信息损失，比减少步数更划算。"};
+    if(i===0) return {cls:"warn", text:"减少交接次数确实能少丢一点信息，但 3 步时每步要同时满足 4 条约束，单步成功率掉得更快：约 "+pct(merged.overall)+"，几乎没改善。再试试只改格式那一组。"};
+    return {cls:"warn", text:"这个示意模型只建模了「负荷」和「交接保真度」，没有建模模型能力，因此无法用它判断换模型的效果——这正是类比的边界。现实中换更强模型可能有效，但本实验能回答的是结构问题：请先比较 A 和 B 两个读数。"};
+  }
+
+  function drawLab(){
+    if(!$("labSvg")) return;
+    var m = labModel(lab);
+    $("roOverall").textContent = Math.round(m.overall*100);
+    $("roStep").textContent = Math.round(m.pStep*100);
+    $("roCost").textContent = m.cost.toFixed(1);
+    $("roCostSub").textContent = "调用 " + m.n + " 次 + 交接 " + m.handoffs + " 次";
+    $("valSteps").textContent = m.n + (m.n===1?" 次":" 步");
+    $("valFormat").textContent = m.structured ? "JSON" : "自由文本";
+    $("valC").textContent = m.C + " 条";
+    $("labSvg").innerHTML = svgFor(m, lab.faded);
+    $("checkList").innerHTML = m.checks.map(function(c){
+      return '<div class="ck"><span>'+esc(c.name)+'</span><div class="track"><i style="width:'+(c.value*100).toFixed(1)+'%"></i></div><b>'+pct(c.value)+'</b></div>';
+    }).join("");
+    Array.prototype.forEach.call($("stepSeg").querySelectorAll("button"), function(b){
+      b.classList.toggle("on", parseInt(b.dataset.n,10) === lab.steps);
+    });
+    Array.prototype.forEach.call($("fmtSeg").querySelectorAll("button"), function(b){
+      b.classList.toggle("on", (b.dataset.v === "1") === lab.structured);
+    });
+    $("cRange").value = String(lab.constraints);
+    $("fadeChk").checked = lab.faded;
+    $("labRoot").classList.toggle("dim", lab.faded);
+    Array.prototype.forEach.call($("predictOpts").querySelectorAll("button"), function(b){
+      b.classList.toggle("picked", parseInt(b.dataset.pred,10) === lab.predict);
+    });
+    Array.prototype.forEach.call($("transferOpts").querySelectorAll("button"), function(b){
+      b.classList.toggle("picked", parseInt(b.dataset.t,10) === lab.transfer);
+    });
+    drawTrials();
+    var ex = $("explainReveal");
+    if(ex && !ex.hidden){
+      ex.innerHTML = explainHTML();
+      Array.prototype.forEach.call(ex.querySelectorAll("[data-ref]"), function(el){ el.tabIndex = 0; });
+    }
+  }
+
+  function renderLab(l){
+    var root = $("labRoot"), f = FIGURES[l.id];
+    if(!f){
+      var idx = -1;
+      L.forEach(function(x,i){ if(x.id === "01") idx = i; });
+      root.innerHTML = '<div class="lab-empty"><h3>本讲暂无互动实验</h3>'+
+        '<p>目前的可操作实验对应第 2 讲「提示词链」：先预测、再改变步数与交接格式、最后解释新情境。<br>其他讲次仍可听音频、看同步讲稿、做自测题。</p>'+
+        '<button class="btn primary" id="goLab">打开第 2 讲的实验 →</button></div>';
+      if($("goLab")) $("goLab").onclick = function(){ if(idx>=0){ load(idx, false); switchTab("lab"); } };
+      return;
+    }
+    root.innerHTML = labHTML(f);
+    $("explainReveal").hidden = true;
+    $("transferReveal").hidden = true;
+    $("predictFeedback").hidden = true;
+    $("transferFeedback").hidden = true;
+
+    $("stepSeg").onclick = function(e){
+      var b = e.target.closest("button[data-n]"); if(!b) return;
+      lab.steps = parseInt(b.dataset.n,10); drawLab();
+    };
+    $("fmtSeg").onclick = function(e){
+      var b = e.target.closest("button[data-v]"); if(!b) return;
+      lab.structured = (b.dataset.v === "1"); drawLab();
+    };
+    $("cRange").oninput = function(){ lab.constraints = parseInt(this.value,10); drawLab(); };
+    $("fadeChk").onchange = function(){ lab.faded = this.checked; drawLab(); };
+    $("trialBtn").onclick = function(){
+      var m = labModel(lab);
+      lab.trials.push(m);
+      if(lab.trials.length > 6) lab.trials.shift();
+      drawTrials();
+    };
+    $("labReset").onclick = function(){ lab = labDefault(); renderLab(L[cur]); };
+    $("predictOpts").onclick = function(e){
+      var b = e.target.closest("button[data-pred]"); if(!b) return;
+      lab.predict = parseInt(b.dataset.pred,10);
+      var msg = predictMessage(lab.predict), box = $("predictFeedback");
+      box.className = "lab-feedback " + msg.cls;
+      box.textContent = msg.text;
+      box.hidden = false;
+      drawLab();
+    };
+    $("transferOpts").onclick = function(e){
+      var b = e.target.closest("button[data-t]"); if(!b) return;
+      lab.transfer = parseInt(b.dataset.t,10);
+      var msg = transferMessage(lab.transfer), box = $("transferFeedback");
+      box.className = "lab-feedback " + msg.cls;
+      box.textContent = msg.text;
+      box.hidden = false;
+      drawLab();
+    };
+    $("revealExplainBtn").onclick = function(){
+      var r = $("explainReveal");
+      if(!r.hidden){ r.hidden = true; this.textContent = "查看参考解释"; return; }
+      r.innerHTML = explainHTML();
+      Array.prototype.forEach.call(r.querySelectorAll("[data-ref]"), function(el){ el.tabIndex = 0; });
+      r.hidden = false;
+      this.textContent = "收起参考解释";
+    };
+    $("revealTransferBtn").onclick = function(){
+      var r = $("transferReveal");
+      if(r.hidden){
+        var base = labModel({steps:6, structured:false, constraints:12});
+        var json = labModel({steps:6, structured:true, constraints:12});
+        var merged = labModel({steps:3, structured:false, constraints:12});
+        r.innerHTML = '参考思路：先定位损失发生在哪里。这条链的瓶颈不是「步数太多」，而是每次交接都丢信息 —— 6 步自由文本约 '+pct(base.overall)+'。只改交接格式 → 约 '+pct(json.overall)+'；只把 6 步合并成 3 步 → 约 '+pct(merged.overall)+'。所以先改格式。换模型不在这个示意模型的范围内，需要另做实验才能判断。<br>把这个判断迁移一下：如果一条链很长但每步都用严格 schema 交接，你还会在第一步就急着合并步骤吗？';
+        r.hidden = false;
+        this.textContent = "收起参考思路";
+      } else { r.hidden = true; this.textContent = "查看参考思路"; }
+    };
+    // 术语 ↔ 部件双向高亮（指针与键盘均可用）
+    root.onmouseover = function(e){
+      var t = e.target && e.target.closest ? e.target.closest("[data-ref]") : null;
+      if(t){ setLit(root, t.getAttribute("data-ref"), true); return; }
+      var p = e.target && e.target.closest ? e.target.closest("[data-part]") : null;
+      if(p) p.classList.add("lit");
+    };
+    root.onmouseout = function(e){
+      var t = e.target && e.target.closest ? e.target.closest("[data-ref]") : null;
+      if(t){ setLit(root, t.getAttribute("data-ref"), false); return; }
+      var p = e.target && e.target.closest ? e.target.closest("[data-part]") : null;
+      if(p) p.classList.remove("lit");
+    };
+    root.onfocusin = function(e){
+      var t = e.target && e.target.closest ? e.target.closest("[data-ref]") : null;
+      if(t) setLit(root, t.getAttribute("data-ref"), true);
+    };
+    root.onfocusout = function(e){
+      var t = e.target && e.target.closest ? e.target.closest("[data-ref]") : null;
+      if(t) setLit(root, t.getAttribute("data-ref"), false);
+    };
+    Array.prototype.forEach.call(root.querySelectorAll("[data-ref]"), function(el){ el.tabIndex = 0; });
+    lab.lessonId = l.id;
+    drawLab();
+  }
+  function setLit(root, id, on){
+    if(!id) return;
+    Array.prototype.forEach.call(root.querySelectorAll('[data-part="'+id+'"]'), function(el){ el.classList.toggle("lit", on); });
+    Array.prototype.forEach.call(root.querySelectorAll('[data-ref="'+id+'"]'), function(el){ el.classList.toggle("lit", on); });
+  }
+
+  try { if(window.top !== window.self) $("iframeTip").hidden = false; }
+  catch(e){ $("iframeTip").hidden = false; }
+  $("localPath").textContent = window.location.href;
+  $("bookMeta").textContent = L.length + " 讲 · 约 " + Math.round(TOTAL/60) + " 分钟 · 全书 321 页";
+  syncPlayUI();
+  load(0, false);
+  switchTab("script");
+})();
+</script>
+</body>
+</html>

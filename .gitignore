@@ -1,0 +1,14 @@
+# WorkBuddy 项目数据（含本机路径与工作日志），不上传
+.workbuddy/
+
+# 全本合辑已从项目移除：内容与 audio/ 下 33 个分讲完全重复，页面也不再引用。
+# 即使本地用 tools/tts_build.py --with-full-book 重新生成，也不随仓库分发。
+全本合辑_33讲.mp3
+
+# 工具运行产生的临时 / 预览 / 备份目录
+声音试听/
+audio_原版备份/
+.concat.tmp
+__pycache__/
+*.pyc
+.DS_Store
